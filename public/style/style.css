@@ -1,0 +1,46 @@
+#title {
+    color: black;
+}
+
+.high {
+    color: red;
+    font-weight: bold;
+}
+
+.low {
+    color: green;
+}
+
+.high {
+    color: orange;
+}
+
+a {
+    color: pink;
+}
+
+a:visited {
+    color: purple;
+}
+
+li:nth-child(even) {
+    list-style: square;
+}
+
+.responsive-image {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+}
+
+.round-image {
+    border-radius: 50%;
+}
+
+body {
+    background-color: #fff;
+    background-image:
+    linear-gradient(90deg, transparent 79px, #abced4 79px, #abced4 81px, transparent 81px),
+    linear-gradient(#eee .1em, transparent .1em);
+    background-size: 100% 1.2em;
+}
