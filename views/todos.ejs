@@ -1,0 +1,18 @@
+<%- include('partials/header'); -%>
+
+<h1 id="title">TODOs</h1>
+<h2>(<%= todos.length %>)</h2>
+<ul>
+    <% todos.forEach((item, index) => { %>
+        <%- include('components/task', {item, index}); -%>
+    <% }) %>
+</ul>
+
+<form action="/todo" method="post">
+    <input type="text" name="title" placeholder="Title"><br>
+    <input type="text" name="description" placeholder="Description"><br>
+    <input type="number" name="priority" placeholder="5"><br>
+    <input type="submit" value="Submit">
+</form>
+
+<%- include('partials/footer'); -%>

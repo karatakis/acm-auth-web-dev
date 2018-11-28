@@ -29,7 +29,12 @@ function saveTodo(todo) {
     todos.push(todo)
 }
 
+function deleteTodo(index) {
+    todos.splice(index, 1)
+}
+
 module.exports = {
     getTodos,
-    saveTodo
+    saveTodo,
+    deleteTodo
 }

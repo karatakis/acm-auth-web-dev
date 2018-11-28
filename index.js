@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
+app.set('view engine', 'ejs')
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
     extended: true
@@ -15,26 +16,17 @@ app.get('/', (req, res) => {
 })
 
 app.get('/todo', (req, res) => {
-    let page = '<h1 id="title">TODO</h1>'
     const todos = todoRepository.getTodos()
-    page += '<ul>'
-    todos.forEach((item) => {
-        page += '<li>'
-        page += item.title
-        page += '</li>'
-    })
-    page += '</ul>'
-    page += '<form action="/todo" method="post" >'
-    page += '<input type="text" name="title" placeholder="Title"><br>'
-    page += '<input type="text" name="description" placeholder="Description"><br>'
-    page += '<input type="number" name="priority" placeholder="5"><br>'
-    page += '<input type="submit" value="Submit">'
-    page += '</form>'
-    res.send(page)
+    res.render('todos', {todos})
 })
 
 app.post('/todo', (req, res) => {
     todoRepository.saveTodo(req.body)
+    res.redirect('/todo')
+})
+
+app.post('/todo-delete', (req, res) => {
+    todoRepository.deleteTodo(req.body.index)
     res.redirect('/todo')
 })
 
