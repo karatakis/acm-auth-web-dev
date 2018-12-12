@@ -2,8 +2,9 @@
     <b>[<%= item.priority%>]<%= item.title %></b>
     <br>
     <%= item.description %>
-    <form action="/todo-delete" method="post">
+    <form class="delete-task-form">
         <input style="display: none" type="number" name="index" value="<%= index %>">
-        <input type="submit" value="Delete">
+        <input class="btn btn-danger" type="submit" value="Delete">
     </form>
+    <button type="button" class="btn btn-light">Update</button>
 </li>

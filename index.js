@@ -6,6 +6,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
     extended: true
 }))
+app.use(express.static('public'))
 
 const port = 3000
 
@@ -25,9 +26,9 @@ app.post('/todo', (req, res) => {
     res.redirect('/todo')
 })
 
-app.post('/todo-delete', (req, res) => {
+app.delete('/todo', (req, res) => {
     todoRepository.deleteTodo(req.body.index)
-    res.redirect('/todo')
+    res.sendStatus(200)
 })
 
 app.listen(port, () => {
