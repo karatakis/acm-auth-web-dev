@@ -31,6 +31,15 @@ app.delete('/todo', (req, res) => {
     res.sendStatus(200)
 })
 
+app.put('/todo', (req, res) => {
+    let result = todoRepository.updateTodo(req.body.index, req.body.data)
+    if (result) {
+        res.sendStatus(200)
+    } else {
+        res.sendStatus(400)
+    }
+})
+
 app.listen(port, () => {
     console.log('Server running at http://localhost:' + port)
 })

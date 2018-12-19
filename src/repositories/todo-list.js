@@ -33,8 +33,23 @@ function deleteTodo(index) {
     todos.splice(index, 1)
 }
 
+function updateTodo(index, data) {
+    if (index < todos.length) {
+        let todo = todos[index]
+        let keys = Object.keys(todo)
+        keys.forEach((key) => {
+            if (data[key]) {
+                todo[key] = data[key]
+            }
+        })
+        return true
+    }
+    return false
+}
+
 module.exports = {
     getTodos,
     saveTodo,
-    deleteTodo
+    deleteTodo,
+    updateTodo
 }
