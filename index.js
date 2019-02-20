@@ -1,6 +1,8 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
+const connection = require('./src/dependencies/database')
+connection.connect()
 app.set('view engine', 'ejs')
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
@@ -16,28 +18,53 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
-app.get('/todo', (req, res) => {
-    const todos = todoRepository.getTodos()
-    res.render('todos', {todos})
+app.get('/todo', async (req, res) => {
+    // try {
+    //     let todos = await todoRepository.getTodos()
+    //     res.render('todos', {todos})
+    // } catch (error) {
+    //     res.send('error')
+    //     console.error(error)
+    // }
+    todoRepository.getTodos()
+    .then((todos) => {
+        res.render('todos', {todos})
+    })
+    .catch((error) => {
+        res.send('error')
+        console.error(error)
+    })
 })
 
 app.post('/todo', (req, res) => {
-    todoRepository.saveTodo(req.body)
-    res.redirect('/todo')
+    todoRepository.saveTodo(req.body, (error) => {
+        if (error) {
+            res.send('error')
+            console.error(error)
+            return
+        }
+        res.redirect('/todo')
+    })
 })
 
 app.delete('/todo', (req, res) => {
-    todoRepository.deleteTodo(req.body.index)
-    res.sendStatus(200)
+    todoRepository.deleteTodo(req.body.index, (error) => {
+        if (error) {
+            res.sendStatus(400)
+            return
+        }
+        res.sendStatus(200)
+    })
 })
 
 app.put('/todo', (req, res) => {
-    let result = todoRepository.updateTodo(req.body.index, req.body.data)
-    if (result) {
+    todoRepository.updateTodo(req.body.index, req.body.data, (error) => {
+        if (error) {
+            res.sendStatus(400)
+            return
+        }
         res.sendStatus(200)
-    } else {
-        res.sendStatus(400)
-    }
+    })
 })
 
 app.listen(port, () => {

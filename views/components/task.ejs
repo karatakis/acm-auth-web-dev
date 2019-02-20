@@ -1,5 +1,5 @@
 <li>
-    <input disabled hidden class="index-value" type="number" name="index" value="<%= index %>">
+    <input disabled hidden class="index-value" type="number" name="index" value="<%= item.id %>">
     <input disabled hidden class="title-value" type="text" name="title" value="<%= item.title %>">
     <input disabled hidden class="description-value" type="text" name="description" value="<%= item.description %>">
     <input disabled hidden class="priority-value" type="text" name="priority" value="<%= item.priority %>">
@@ -7,7 +7,7 @@
     <br>
     <%= item.description %>
     <form class="delete-task-form">
-        <input style="display: none" type="number" name="index" value="<%= index %>">
+        <input style="display: none" type="number" name="index" value="<%= item.id %>">
         <input class="btn btn-danger" type="submit" value="Delete">
     </form>
     <button type="button" class="btn btn-light update-btn">Update</button>
