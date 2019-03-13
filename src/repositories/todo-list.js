@@ -20,9 +20,9 @@ function saveTodo(todo, callback) {
     return connection.query(sql, callback)
 }
 
-function deleteTodo(index, callback) {
+function deleteTodo(id, callback) {
     let sql = "DELETE FROM `todos` WHERE `todos`.`id` = ?"
-    let inserts = [index]
+    let inserts = [id]
     sql = mysql.format(sql, inserts)
     return connection.query(sql, callback)
 }

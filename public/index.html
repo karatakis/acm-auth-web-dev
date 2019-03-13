@@ -28,9 +28,13 @@
 
     <todo-modal @insert-todo="insertTodo($event)"></todo-modal>
 
+    <todo-update-modal ref="updateModal" @todo-updated="fetchTodos()"></todo-update-modal>
+
     <p>
       <ul>
-        <todo-item v-for="todo in todos" :key="todo.id" :data="todo" @delete-todo="deleteTodo($event)">
+        <todo-item v-for="todo in todos" :key="todo.id" :data="todo" @delete-todo="deleteTodo($event)" @update-todo="updateTodo($event)">
+          >
+          <template slot="end"><<</template>
         </todo-item>
       </ul>
     </p>
@@ -39,9 +43,47 @@
 
 <script type="text/x-template" id="todo-item-template">
   <li>
+    <slot></slot>
     {{data.title}}
+    <button @click="updateTodo()" type="button" class="btn btn-info">Update</button>
     <button @click="deleteTodo(data.id)" type="button" class="btn btn-danger">Delete</button>
+    <slot name="end"></slot>
   </li>
+</script>
+
+<script type="text/x-template" id="todo-modal-update-template">
+
+  <div class="modal fade" id="UpdateTodoModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update TODO</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="">{{ message }}</div>
+          <div class="form-group">
+            <label>Title</label>
+            <input v-model="title" type="text" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea v-model="description" class="form-control"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <input type="number" class="form-control" v-model="priority">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button @click="resetModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button @click="updateTodo()" type="button" class="btn btn-primary">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </script>
 
 <script type="text/x-template" id="todo-modal-template">
@@ -112,6 +154,55 @@
     }
   })
 
+  Vue.component('todo-update-modal', {
+    template: '#todo-modal-update-template',
+    data() {
+      return {
+        id: false,
+        title: '',
+        description: '',
+        priority: 5,
+        message: '',
+      }
+    },
+    methods: {
+      updateTodo() {
+        axios.put('/todo', {
+          id: this.id,
+          data: {
+            title: this.title,
+            description: this.description,
+            priority: this.priority
+          }
+        })
+        .then(() => {
+          $('#UpdateTodoModal').modal('hide')
+          this.resetModal()
+          this.$emit('todo-updated')
+        })
+        .catch((error) => {
+          console.log(error)
+          this.message = 'Please try again'
+        })
+      },
+      resetModal() {
+        this.id = false
+        this.title = ''
+        this.description = ''
+        this.priority = 5
+        this.message = ''
+      },
+      openModal(todo) {
+        this.id = todo.id
+        this.title = todo.title
+        this.description = todo.description
+        this.priority = todo.priority
+
+        $('#UpdateTodoModal').modal('show')
+      }
+    }
+  })
+
   Vue.component('todo-item', {
     template: '#todo-item-template',
     props: {
@@ -123,57 +214,37 @@
     methods: {
       deleteTodo(id) {
         this.$emit('delete-todo', id)
+      },
+      updateTodo() {
+        this.$emit('update-todo', this.data)
       }
     }
   })
+
   const app = new Vue({
     el: '#app',
     data() {
-
       return {
         title: 'TODO App',
-        id: 5,
-        todos: [
-          {
-            id: 1,
-            title: 'Feed dog',
-            description: 'Obvious',
-            priority: 5
-          },
-          {
-            id: 2,
-            title: 'Feed cat',
-            description: 'Obvious',
-            priority: 4
-          },
-          {
-            id: 3,
-            title: 'Feed fish',
-            description: 'Obvious',
-            priority: 10
-          },
-        ]
+        todos: []
       }
     },
     mounted() {
-      setTimeout(() => {
-        this.title = 'Magic TODO App'
-        this.todos.push({
-          id: 4,
-          title: 'Prepare food',
-          description: 'Pastitsio',
-          priority: 4
-        })
-      }, 3000)
-
+      this.fetchTodos()
     },
     methods: {
+      fetchTodos () {
+        axios.get('/todo')
+        .then((response) => {
+          this.todos = response.data
+        })
+      },
       deleteTodo(id) {
         this.todos = _.filter(this.todos, (todo) => {
           return todo.id != id
         })
 
-        axios.delete('/todos', { data: { id } })
+        axios.delete('/todo', { data: { id } })
           .then(() => {
             console.log('fetch')
           })
@@ -184,30 +255,21 @@
 
       },
       insertTodo({ title, description, priority }) {
-        this.todos.push({
-          id: this.id,
-          title,
-          description,
-          priority
-        })
-
-        this.id += 1
-
-        axios.post('/todos', {
+        axios.post('/todo', {
           title,
           description,
           priority
         })
           .then(() => {
-            console.log('fetch')
+            this.fetchTodos()
           })
           .catch((error) => {
             console.error(error)
             // todo
           })
       },
-      updateTodo(id, title, description, priority) {
-        return false
+      updateTodo(todo) {
+        this.$refs.updateModal.openModal(todo)
       }
     }
   })

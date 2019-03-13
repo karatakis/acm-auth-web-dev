@@ -28,7 +28,7 @@ app.get('/todo', async (req, res) => {
     // }
     todoRepository.getTodos()
     .then((todos) => {
-        res.render('todos', {todos})
+        res.send(todos)
     })
     .catch((error) => {
         res.send('error')
@@ -48,7 +48,7 @@ app.post('/todo', (req, res) => {
 })
 
 app.delete('/todo', (req, res) => {
-    todoRepository.deleteTodo(req.body.index, (error) => {
+    todoRepository.deleteTodo(req.body.id, (error) => {
         if (error) {
             res.sendStatus(400)
             return
@@ -58,7 +58,7 @@ app.delete('/todo', (req, res) => {
 })
 
 app.put('/todo', (req, res) => {
-    todoRepository.updateTodo(req.body.index, req.body.data, (error) => {
+    todoRepository.updateTodo(req.body.id, req.body.data, (error) => {
         if (error) {
             res.sendStatus(400)
             return
